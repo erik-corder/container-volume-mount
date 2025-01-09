@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 
 // Mounted volume path inside Azure App Service
-const MOUNTED_VOLUME_PATH = "/sitemaps/sitemaps";
+const MOUNTED_VOLUME_PATH = "https://digital400.file.core.windows.net/sitemap-volume/sitemaps";
 
 export default async function handler(
   req: NextApiRequest,
