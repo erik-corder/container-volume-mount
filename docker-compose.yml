@@ -1,0 +1,9 @@
+version: "3.8"
+services:
+  nextjs-app:
+    build:
+      context: .
+    volumes:
+      - ./data:/path/to/mounted/volume # Host to container volume
+    ports:
+      - "3000:3000"
