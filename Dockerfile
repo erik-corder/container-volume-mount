@@ -8,6 +8,9 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 RUN yarn install
 
+# Declare the volume
+VOLUME ["/app/wwwroot/sitemaps"]
+
 # Copy the application code
 COPY . .
 

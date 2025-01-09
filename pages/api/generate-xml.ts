@@ -2,7 +2,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
 import path from "path";
 
-const MOUNTED_VOLUME_PATH = "/path/to/mounted/volume"; // Adjust this based on your Docker container setup.
+// Use the volume's mount path inside the container
+const MOUNTED_VOLUME_PATH = "/app/wwwroot/sitemaps";
 
 export default async function handler(
   req: NextApiRequest,
