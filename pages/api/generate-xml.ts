@@ -2,8 +2,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
 import path from "path";
 
-// Use the volume's mount path inside the container
-const MOUNTED_VOLUME_PATH = "/app/wwwroot/sitemaps";
+// Mounted volume path inside Azure App Service
+const MOUNTED_VOLUME_PATH = "/sitemap-volume/sitemaps";
 
 export default async function handler(
   req: NextApiRequest,
@@ -31,23 +31,29 @@ export default async function handler(
         </root>
       `;
 
-      // Define the file path in the mounted volume
-      const filePath = path.join(MOUNTED_VOLUME_PATH, "output.xml");
+      // Ensure the directory exists
+      if (!fs.existsSync(MOUNTED_VOLUME_PATH)) {
+        fs.mkdirSync(MOUNTED_VOLUME_PATH, { recursive: true });
+      }
 
-      // Write the XML file to the mounted volume
+      // Define the file path in the mounted volume
+      const fileName = "output.xml";
+      const filePath = path.join(MOUNTED_VOLUME_PATH, fileName);
+
+      // Write the XML file to the directory
       fs.writeFileSync(filePath, xml);
 
+      // Return the URL where the file can be accessed
+      const fileUrl = `https://${req.headers.host}/sitemap-volume/sitemaps/${fileName}`;
       res.status(200).json({
         message: "XML file generated and saved successfully.",
-        filePath,
+        fileUrl,
       });
     } catch (error) {
       console.error("Error generating XML:", error);
       res.status(500).json({ error: "Failed to generate XML file." });
     }
   } else {
-    console.log("Method Not Allowed");
-
     res.setHeader("Allow", ["GET"]);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
