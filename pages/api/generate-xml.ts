@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 
 // Mounted volume path inside Azure App Service
-const MOUNTED_VOLUME_PATH = "/sitemap-volume/sitemaps";
+const MOUNTED_VOLUME_PATH = "/sitemaps/sitemaps";
 
 export default async function handler(
   req: NextApiRequest,
@@ -44,7 +44,7 @@ export default async function handler(
       fs.writeFileSync(filePath, xml);
 
       // Return the URL where the file can be accessed
-      const fileUrl = `https://${req.headers.host}/sitemap-volume/sitemaps/${fileName}`;
+      const fileUrl = `https://${req.headers.host}/sitemaps/sitemaps/${fileName}`;
       res.status(200).json({
         message: "XML file generated and saved successfully.",
         fileUrl,
