@@ -8,8 +8,8 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 RUN yarn install
 
-# Declare the volume
-VOLUME ["/app/wwwroot/sitemaps"]
+# Ensure the generated XML directory exists
+RUN mkdir -p public/generated-xml
 
 # Copy the application code
 COPY . .
