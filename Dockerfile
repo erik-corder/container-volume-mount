@@ -6,13 +6,13 @@ WORKDIR /app
 
 # Copy package.json and install dependencies
 COPY package.json yarn.lock ./
-RUN yarn install
-
-# Ensure the generated XML directory exists
-RUN mkdir -p public/generated-xml
+RUN yarn install --production
 
 # Copy the application code
 COPY . .
+
+# Set a writable directory for Azure volume
+VOLUME /mnt/azure
 
 # Expose the Next.js default port
 EXPOSE 3000

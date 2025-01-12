@@ -1,48 +1,58 @@
-import fs from 'fs';
-import path from 'path';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse } from "next";
+import fs from "fs";
+import path from "path";
 
-type ApiResponse = {
-    message: string;
-    filePath?: string;
-    error?: string;
-};
+const AZURE_VOLUME_PATH = "/mnt/azure/sitemaps"; // Mounted Azure volume path
 
-export default function handler(req: NextApiRequest, res: NextApiResponse<ApiResponse>): void {
-    // Example XML content
-    const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
-    <note>
-        <to>Tove</to>
-        <from>Jani</from>
-        <heading>Reminder</heading>
-        <body>Don't forget me this weekend!</body>
-    </note>`;
-
-    // Define the directory and file paths
-    const dirPath = path.join(process.cwd(), 'public', 'generated-xml');
-    const filePath = path.join(dirPath, 'example.xml');
-
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method === "GET") {
     try {
-        // Ensure the directory exists
-        if (!fs.existsSync(dirPath)) {
-            fs.mkdirSync(dirPath, { recursive: true }); // Create directory recursively
-        }
+      // Ensure the Azure volume path exists
+      if (!fs.existsSync(AZURE_VOLUME_PATH)) {
+        fs.mkdirSync(AZURE_VOLUME_PATH, { recursive: true });
+      }
 
-        // Write the XML content to the file
-        fs.writeFileSync(filePath, xmlContent);
+      // Dummy data
+      const data: { [key: string]: string | number } = {
+        name: "John Doe",
+        age: 30,
+        city: "New York",
+      };
 
-        // Respond with success
-        res.status(200).json({
-            message: 'XML file generated successfully',
-            filePath,
-        });
+      // Convert dummy data to XML
+      const xml = `
+        <?xml version="1.0" encoding="UTF-8"?>
+        <root>
+          ${Object.keys(data)
+            .map(
+              (key) => `
+            <${key}>${data[key]}</${key}>`
+            )
+            .join("")}
+        </root>
+      `;
+
+      // Define the file path in the mounted Azure volume
+      const filePath = path.join(AZURE_VOLUME_PATH, "output.xml");
+
+      // Write the XML file
+      fs.writeFileSync(filePath, xml);
+
+      res.status(200).json({
+        message: "XML file generated and saved successfully in the Azure mounted volume.",
+        filePath: `/sitemaps/output.xml`, // This might need a public URL, depending on Azure setup
+      });
     } catch (error) {
-        console.error('Error generating XML file:', error);
-
-        // Respond with error
-        res.status(500).json({
-            message: 'Failed to generate XML file',
-            error: (error as Error).message,
-        });
+      console.error("Error generating XML:", error);
+      res.status(500).json({ error: "Failed to generate XML file." });
     }
+  } else {
+    console.log("Method Not Allowed");
+
+    res.setHeader("Allow", ["GET"]);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
+  }
 }
