@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
 import path from "path";
 
-const AZURE_VOLUME_PATH = "/mnt/azure/sitemaps"; // Mounted Azure volume path
+const AZURE_MOUNT_PATH = "/home/site/sitemaps"; // Mounted file share path in App Service
 
 export default async function handler(
   req: NextApiRequest,
@@ -10,9 +10,9 @@ export default async function handler(
 ) {
   if (req.method === "GET") {
     try {
-      // Ensure the Azure volume path exists
-      if (!fs.existsSync(AZURE_VOLUME_PATH)) {
-        fs.mkdirSync(AZURE_VOLUME_PATH, { recursive: true });
+      // Ensure the directory exists
+      if (!fs.existsSync(AZURE_MOUNT_PATH)) {
+        fs.mkdirSync(AZURE_MOUNT_PATH, { recursive: true });
       }
 
       // Dummy data
@@ -22,7 +22,7 @@ export default async function handler(
         city: "New York",
       };
 
-      // Convert dummy data to XML
+      // Convert data to XML
       const xml = `
         <?xml version="1.0" encoding="UTF-8"?>
         <root>
@@ -35,23 +35,21 @@ export default async function handler(
         </root>
       `;
 
-      // Define the file path in the mounted Azure volume
-      const filePath = path.join(AZURE_VOLUME_PATH, "output.xml");
+      // Define the file path in the mounted volume
+      const filePath = path.join(AZURE_MOUNT_PATH, "output.xml");
 
       // Write the XML file
       fs.writeFileSync(filePath, xml);
 
       res.status(200).json({
         message: "XML file generated and saved successfully in the Azure mounted volume.",
-        filePath: `/sitemaps/output.xml`, // This might need a public URL, depending on Azure setup
+        filePath: `/sitemaps/output.xml`, // Publicly accessible if served correctly
       });
     } catch (error) {
       console.error("Error generating XML:", error);
       res.status(500).json({ error: "Failed to generate XML file." });
     }
   } else {
-    console.log("Method Not Allowed");
-
     res.setHeader("Allow", ["GET"]);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
