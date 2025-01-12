@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
 import path from "path";
 
-const AZURE_MOUNT_PATH = "/home/site/sitemaps"; // Mounted file share path in App Service
+const AZURE_MOUNT_PATH = "/home/site/sitemap-volume/sitemaps"; // Mounted file share path in App Service
 
 export default async function handler(
   req: NextApiRequest,
