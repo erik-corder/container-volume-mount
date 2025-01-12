@@ -12,7 +12,7 @@ RUN yarn install --production
 COPY . .
 
 # Set a writable directory for Azure volume
-VOLUME /mnt/azure
+VOLUME /home/site/sitemaps
 
 # Expose the Next.js default port
 EXPOSE 3000
