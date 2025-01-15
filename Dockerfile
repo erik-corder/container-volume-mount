@@ -11,7 +11,7 @@ RUN yarn install --production
 # Copy the application code
 COPY . .
 
-VOLUME /home/site/sitemap-volume/sitemaps
+VOLUME /home/site/sitemap-volume
 
 # Expose the Next.js default port
 EXPOSE 3000

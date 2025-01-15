@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
 import path from "path";
 
-const AZURE_MOUNT_PATH = "/home/site/sitemap-volume/sitemaps"; // Mounted file share path in App Service
+const AZURE_MOUNT_PATH = "/home/site/sitemap-volume"; // Mounted file share path in App Service
 
 export default async function handler(
   req: NextApiRequest,
@@ -36,7 +36,7 @@ export default async function handler(
       `;
 
       // Define the file path in the mounted volume
-      const filePath = path.join(AZURE_MOUNT_PATH, "output.xml");
+      const filePath = path.join(AZURE_MOUNT_PATH, "sitemaps/output.xml");
 
       // Write the XML file
       fs.writeFileSync(filePath, xml);
