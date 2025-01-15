@@ -11,9 +11,9 @@ export default async function handler(
   if (req.method === "GET") {
     try {
       // Ensure the directory exists
-      if (!fs.existsSync(AZURE_MOUNT_PATH)) {
-        fs.mkdirSync(AZURE_MOUNT_PATH, { recursive: true });
-      }
+      // if (!fs.existsSync(AZURE_MOUNT_PATH)) {
+      //   fs.mkdirSync(AZURE_MOUNT_PATH, { recursive: true });
+      // }
 
       // Dummy data
       const data: { [key: string]: string | number } = {
